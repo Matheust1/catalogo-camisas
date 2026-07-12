@@ -1,25 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Camisas de Time</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eleven Supply — Catálogo de Camisas de Time</title>
+  <meta name="description" content="Catálogo de camisas de time. Escolha a sua e finalize o pedido pelo WhatsApp.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
-        <h1 class="logo">Eleven Supply</h1>
-        <button id="theme-toggle" class = "theme-toggle">🌙</button>
-    </header>
 
-    <main class="catalog" id="catalog">
-        
-    </main>
+  <header class="header">
+    <div class="header-top">
+      <div class="brand">
+        <span class="brand-number">XI</span>
+        <div class="brand-text">
+          <h1 class="brand-name">Eleven Supply</h1>
+          <span class="brand-tag">Catálogo oficial de camisas</span>
+        </div>
+      </div>
 
-    <footer class="footer">
-        <p>&copy; 2026 Eleven Supply. Todos os direitos reservados.</p>
-    </footer>
-    
-    <script src="script.js"></script>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input type="text" id="search-input" placeholder="Buscar por time..." aria-label="Buscar camisa por time">
+      </div>
+
+      <div class="filter-chips" id="filter-chips">
+        <!-- chips de categoria inseridos via JS -->
+      </div>
+    </div>
+  </header>
+
+  <main class="catalog" id="catalog">
+    <!-- cards inseridos via JavaScript -->
+  </main>
+
+  <p class="empty-state" id="empty-state" hidden>
+    Nenhuma camisa encontrada. Tenta buscar por outro time.
+  </p>
+
+  <div class="modal-overlay" id="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
+
+      <div class="modal-gallery">
+        <button class="modal-nav modal-nav-prev" id="modal-prev" aria-label="Foto anterior">&#8249;</button>
+        <div class="modal-main-image" id="modal-main-image"></div>
+        <button class="modal-nav modal-nav-next" id="modal-next" aria-label="Próxima foto">&#8250;</button>
+      </div>
+
+      <div class="modal-thumbs" id="modal-thumbs"></div>
+
+      <div class="modal-info">
+        <span class="card-team" id="modal-team"></span>
+        <h2 class="modal-title" id="modal-title"></h2>
+        <span class="card-sizes" id="modal-sizes"></span>
+        <span class="card-price" id="modal-price"></span>
+        <a href="#" class="whatsapp-btn" id="modal-whatsapp" target="_blank" rel="noopener noreferrer">
+          Pedir no WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <span class="brand-number small">XI</span>
+        <strong>Eleven Supply</strong>
+      </div>
+      <p>Pedidos combinados diretamente pelo WhatsApp. Pagamento e entrega tratados na conversa.</p>
+      <a class="footer-whatsapp" id="footer-whatsapp" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+      <p class="copyright">&copy; 2026 Eleven Supply. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

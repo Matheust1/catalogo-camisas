@@ -1,123 +1,600 @@
+/* ===================================================================
+   RESET
+=================================================================== */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+img { display: block; max-width: 100%; }
+button { font: inherit; }
+
+/* ===================================================================
+   DESIGN TOKENS
+=================================================================== */
 :root {
-    --cor-primaria: #d32f2f;
-    --cor-primaria-hover: #b71c1c;
-    --cor-fundo: #ffffff;
-    --cor-fundo-card: #f5f5f5;
-    --cor-texto: #1a1a1a;
-    --cor-texto-secundario: #555555;
-    --cor-borda: #e0e0e0;
+  /* cor de marca — vermelho estádio, não muda entre temas */
+  --red: #E10600;
+  --red-dark: #A30000;
+  --red-tint: #ffe3e1;
+
+  /* tema claro (padrão) */
+  --bg: #F6F4F1;
+  --bg-elevated: #FFFFFF;
+  --text: #16181D;
+  --text-muted: #6B7069;
+  --border: #E4E0D8;
+  --shadow: 0 10px 30px rgba(20, 15, 10, 0.08);
+
+  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
 }
 
-[data-theme = "dark"] {
-    --cor-fundo: #121212;
-    --cor-fundo-card: #1e1e1e;
-    --cor-texto: #f5f5f5;
-    --cor-texto-secundario: #b0b0b0;
-    --cor-borda: #333333;
+[data-theme="dark"] {
+  --bg: #101114;
+  --bg-elevated: #1A1B20;
+  --text: #F4F3F1;
+  --text-muted: #9A9C A3;
+  --text-muted: #9C9DA4;
+  --text-muted: #9C9DA4;
+  --border: #2B2C33;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --red-tint: #34120f;
 }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: var(--cor-fundo);
-    color: var(--cor-texto);
-    transition: background-color 0.3s, color 0.3s;
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
 }
 
+/* ===================================================================
+   HEADER
+=================================================================== */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background-color: var(--cor-fundo-card);
-    border-bottom: 2px solid var(--cor-primaria);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg-elevated);
+  border-bottom: 3px solid var(--red);
+  padding: 1.1rem 1.5rem 1rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-.logo {
-    font-size: 1.5rem;
-    color: var(--cor-texto);
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-number {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--bg-elevated);
+  background-color: var(--red);
+  padding: 0.15rem 0.6rem 0.25rem;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.brand-number.small {
+  font-size: 1.1rem;
+  padding: 0.1rem 0.45rem 0.15rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  letter-spacing: 0.5px;
+}
+
+.brand-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .theme-toggle {
-    background: none;
-    border: 2px solid var(--cor-borda);
-    border-radius: 50%;
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.2rem;
-    cursor: pointer;
-    background-color: var(--cor-fundo);
-    transition: transform 0.2s;
+  position: relative;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .theme-toggle:hover {
-    tranform: scale(1.1);
-    border-color: var(--cor-primaria);
+  transform: scale(1.08);
+  border-color: var(--red);
 }
 
+.theme-toggle .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  grid-area: 1 / 1;
+}
+
+.icon-moon { display: none; }
+[data-theme="dark"] .icon-sun { display: none; }
+[data-theme="dark"] .icon-moon { display: block; }
+
+/* ===================================================================
+   TOOLBAR (busca + filtros)
+=================================================================== */
+.toolbar {
+  max-width: 1200px;
+  margin: 1rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.icon-search {
+  width: 1rem;
+  height: 1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background-color: var(--bg-elevated);
+  color: var(--text);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--red);
+}
+
+.chip.active {
+  background-color: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+/* ===================================================================
+   CATALOG GRID
+=================================================================== */
 .catalog {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.75rem;
+  padding: 2rem 1.5rem 1rem;
 }
 
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 3rem 1.5rem;
+}
+
+/* ===================================================================
+   CARD — visual "etiqueta de ingresso"
+=================================================================== */
 .card {
-    background-color: var(--cor-fundo-card);
-    border: 1px solid var(--cor-borda);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
 }
 
-.card img {
-    width: 100%;
-    border-radius: 6px;
-    margin-bottom: 0.75rem;
+.card-image {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background-color: var(--red-tint);
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+.card-image img,
+.card-image svg.jersey-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.price {
-    color: var(--cor-primaria);
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
+/* recorte estilo "canhoto de ingresso" separando foto do conteúdo */
+.card-image::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  background-color: var(--bg-elevated);
+  clip-path: polygon(
+    0% 30%, 8.33% 100%, 16.66% 30%, 25% 100%,
+    33.33% 30%, 41.66% 100%, 50% 30%, 58.33% 100%,
+    66.66% 30%, 75% 100%, 83.33% 30%, 91.66% 100%,
+    100% 30%, 100% 100%, 0% 100%
+  );
+}
+
+.card-badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  background-color: var(--red);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  padding: 0.15rem 0.55rem 0.25rem;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  z-index: 1;
+}
+
+.card-body {
+  padding: 1rem 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.card-team {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+}
+
+.card-price {
+  color: var(--red);
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin-top: 0.15rem;
+}
+
+.card-sizes {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
 }
 
 .whatsapp-btn {
-    display: inline-block;
-    background-color: var(--cor-primaria);
-    color: white;
-    text-decoration: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: background-color 0.2s;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: var(--red);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: background-color 0.2s ease;
 }
 
 .whatsapp-btn:hover {
-    background-color: var(--cor-primaria-hover);
+  background-color: var(--red-dark);
 }
 
+.whatsapp-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.card.unavailable {
+  opacity: 0.55;
+}
+
+.card.unavailable .whatsapp-btn {
+  pointer-events: none;
+  background-color: var(--text-muted);
+}
+
+/* ===================================================================
+   MODAL — página de detalhes da camisa
+=================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 8, 6, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 100;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  position: relative;
+  background-color: var(--bg-elevated);
+  border-radius: 16px;
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "gallery info"
+    "thumbs info";
+  box-shadow: var(--shadow);
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.modal-close:hover {
+  background-color: var(--red);
+  color: #fff;
+}
+
+.modal-gallery {
+  grid-area: gallery;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background-color: var(--red-tint);
+}
+
+.modal-main-image {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-main-image img,
+.modal-main-image svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #16181D;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.modal-nav-prev { left: 0.6rem; }
+.modal-nav-next { right: 0.6rem; }
+
+.modal-nav:hover {
+  background-color: #fff;
+}
+
+.modal-thumbs {
+  grid-area: thumbs;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+}
+
+.modal-thumbs[hidden] {
+  display: none;
+}
+
+.modal-thumb {
+  width: 3.2rem;
+  height: 3.2rem;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.modal-thumb img,
+.modal-thumb svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-thumb.active {
+  border-color: var(--red);
+}
+
+.modal-info {
+  grid-area: info;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+}
+
+.modal-info .card-price {
+  font-size: 1.4rem;
+  margin: 0.3rem 0 0.6rem;
+}
+
+.modal-info .whatsapp-btn {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .modal {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "gallery"
+      "thumbs"
+      "info";
+  }
+}
+
+/* ===================================================================
+   FOOTER
+=================================================================== */
 .footer {
-    text-align: center;
-    padding: 1.5rem;
-    color: var(--cor-texto-secundario);
-    border-top: 1px solid var(--cor-borda);
-    margin-top: 2rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--border);
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-content p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.footer-whatsapp {
+  color: var(--red);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-whatsapp:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  font-size: 0.75rem !important;
+  margin-top: 0.25rem;
+}
+
+/* ===================================================================
+   RESPONSIVE
+=================================================================== */
+@media (max-width: 480px) {
+  .brand-name { font-size: 1.4rem; }
+  .brand-number { font-size: 1.8rem; }
+  .catalog { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; padding: 1.5rem 1rem 1rem; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search-box { max-width: none; }
+}
+
+/* respeita preferência de menos animação */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
 }
