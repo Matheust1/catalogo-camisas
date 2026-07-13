@@ -182,7 +182,7 @@ body {
   background: transparent;
   color: var(--text);
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 1rem; /* mínimo 16px — evita o zoom automático do Safari/Chrome ao focar o campo */
 }
 
 .search-box input::placeholder {
