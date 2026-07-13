@@ -32,7 +32,6 @@ const camisas = [
     nome: "Flamengo 2026 I",
     time: "Flamengo",
     categoria: "Brasileiros",
-    preco: 249.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -42,7 +41,6 @@ const camisas = [
     nome: "Corinthians 2026 I",
     time: "Corinthians",
     categoria: "Brasileiros",
-    preco: 249.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -52,7 +50,6 @@ const camisas = [
     nome: "Palmeiras 2026 I",
     time: "Palmeiras",
     categoria: "Brasileiros",
-    preco: 249.9,
     tamanhos: "M, G, GG",
     imagens: [],
     disponivel: true,
@@ -62,7 +59,6 @@ const camisas = [
     nome: "Santos 2026 I",
     time: "Santos",
     categoria: "Brasileiros",
-    preco: 229.9,
     tamanhos: "P, M, G",
     imagens: [],
     disponivel: true,
@@ -72,7 +68,6 @@ const camisas = [
     nome: "São Paulo 2026 I",
     time: "São Paulo",
     categoria: "Brasileiros",
-    preco: 249.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: false,
@@ -82,7 +77,6 @@ const camisas = [
     nome: "Vasco da Gama 2026 I",
     time: "Vasco da Gama",
     categoria: "Brasileiros",
-    preco: 229.9,
     tamanhos: "M, G, GG",
     imagens: [],
     disponivel: true,
@@ -92,7 +86,6 @@ const camisas = [
     nome: "Grêmio 2026 I",
     time: "Grêmio",
     categoria: "Brasileiros",
-    preco: 229.9,
     tamanhos: "P, M, G",
     imagens: [],
     disponivel: true,
@@ -102,7 +95,6 @@ const camisas = [
     nome: "Internacional 2026 I",
     time: "Internacional",
     categoria: "Brasileiros",
-    preco: 229.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -112,7 +104,6 @@ const camisas = [
     nome: "Real Madrid 2026 I",
     time: "Real Madrid",
     categoria: "Europeus",
-    preco: 279.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -122,7 +113,6 @@ const camisas = [
     nome: "Manchester City 2026 I",
     time: "Manchester City",
     categoria: "Europeus",
-    preco: 279.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -132,7 +122,6 @@ const camisas = [
     nome: "Barcelona 2026 I",
     time: "Barcelona",
     categoria: "Europeus",
-    preco: 279.9,
     tamanhos: "M, G, GG",
     imagens: [],
     disponivel: true,
@@ -142,7 +131,6 @@ const camisas = [
     nome: "River Plate 2026 I",
     time: "River Plate",
     categoria: "Resto do Mundo",
-    preco: 259.9,
     tamanhos: "P, M, G",
     imagens: [],
     disponivel: true,
@@ -152,7 +140,6 @@ const camisas = [
     nome: "Boca Juniors 2026 I",
     time: "Boca Juniors",
     categoria: "Resto do Mundo",
-    preco: 259.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -162,7 +149,6 @@ const camisas = [
     nome: "Brasil 2026 I",
     time: "Brasil",
     categoria: "Seleções",
-    preco: 289.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -172,7 +158,6 @@ const camisas = [
     nome: "Argentina 2026 I",
     time: "Argentina",
     categoria: "Seleções",
-    preco: 289.9,
     tamanhos: "P, M, G, GG",
     imagens: [],
     disponivel: true,
@@ -220,7 +205,6 @@ const modalNext = document.getElementById("modal-next");
 const modalTeam = document.getElementById("modal-team");
 const modalTitle = document.getElementById("modal-title");
 const modalSizes = document.getElementById("modal-sizes");
-const modalPrice = document.getElementById("modal-price");
 const modalWhatsapp = document.getElementById("modal-whatsapp");
 
 /* estado atual dos filtros */
@@ -295,7 +279,6 @@ function criarCardHTML(camisa) {
         <span class="card-team">${camisa.time}</span>
         <h2 class="card-name">${camisa.nome}</h2>
         <span class="card-sizes">Tamanhos: ${camisa.tamanhos}</span>
-        <span class="card-price">R$ ${camisa.preco.toFixed(2).replace(".", ",")}</span>
         <a href="${linkWhatsappCamisa(camisa)}" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
           Pedir no WhatsApp
         </a>
@@ -371,8 +354,18 @@ function abrirModal(camisa) {
   modalTeam.textContent = camisa.time;
   modalTitle.textContent = camisa.nome;
   modalSizes.textContent = `Tamanhos: ${camisa.tamanhos}`;
-  modalPrice.textContent = `R$ ${camisa.preco.toFixed(2).replace(".", ",")}`;
-  modalWhatsapp.href = linkWhatsappCamisa(camisa);
+
+  if (camisa.disponivel) {
+    modalWhatsapp.href = linkWhatsappCamisa(camisa);
+    modalWhatsapp.textContent = "Pedir no WhatsApp";
+    modalWhatsapp.classList.remove("disabled");
+    modalWhatsapp.removeAttribute("aria-disabled");
+  } else {
+    modalWhatsapp.href = "#";
+    modalWhatsapp.textContent = "Esgotado";
+    modalWhatsapp.classList.add("disabled");
+    modalWhatsapp.setAttribute("aria-disabled", "true");
+  }
 
   renderizarThumbs();
   mostrarImagem(0);

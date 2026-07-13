@@ -365,6 +365,11 @@ body {
   height: 1rem;
 }
 
+.whatsapp-btn.disabled {
+  pointer-events: none;
+  background-color: var(--text-muted);
+}
+
 .card.unavailable {
   opacity: 0.55;
 }
