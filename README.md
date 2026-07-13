@@ -1,128 +1,79 @@
-# Eleven Supply — Catálogo de Camisas de Time
+# Eleven Supply
 
-Catálogo online (site estático, sem banco de dados) para visualização de
-camisas de time. Não há carrinho nem checkout: o pedido é combinado
-diretamente pelo WhatsApp, através de um botão em cada camisa.
+Catálogo digital de camisas de time, com pedidos combinados diretamente
+pelo WhatsApp. Sem contas de usuário, sem carrinho, sem checkout — só
+uma vitrine rápida de navegar, com o fechamento do pedido acontecendo
+na conversa.
 
-🔗 **Site no ar:** _(cole aqui o link depois do deploy)_
+🔗 **Site no ar:** _(link após o deploy)_
+
+## Sobre o projeto
+
+O Eleven Supply nasceu como um catálogo simples para uma loja de
+camisas de time: o cliente navega pelas opções disponíveis, filtra por
+categoria, vê os detalhes e várias fotos de cada camisa, e finaliza o
+interesse com um clique que abre o WhatsApp já com a mensagem
+preenchida. Toda a parte de preço, tamanho e pagamento é combinada
+diretamente na conversa.
+
+O site é 100% estático — não depende de servidor, banco de dados ou
+login — o que o torna leve, rápido de carregar e simples de hospedar.
 
 ## Funcionalidades
 
-- Catálogo responsivo (grid que se adapta a qualquer tela)
-- Modo claro/escuro, com a preferência salva no navegador
+- Catálogo responsivo, com grid que se adapta a qualquer tamanho de tela
+- Modo claro/escuro, com a preferência do visitante salva no navegador
 - Busca por nome do time
 - Filtro por categoria (Brasileiros, Europeus, Resto do Mundo, Seleções)
-- Clique numa camisa abre uma página de detalhes com galeria de fotos
-  (vários ângulos, com setas e miniaturas)
-- Botão "Pedir no WhatsApp" com mensagem pré-preenchida por camisa
-- Camisas sem foto real ainda exibem uma ilustração gerada automaticamente
-  nas cores do time
+- Página de detalhes com galeria de fotos (vários ângulos por camisa,
+  navegação por setas e miniaturas)
+- Pedido via WhatsApp com mensagem automática, já identificando a
+  camisa de interesse
+- Camisas sem foto cadastrada exibem uma ilustração gerada
+  automaticamente nas cores do time, evitando cards quebrados
+
+## Tecnologias
+
+HTML, CSS e JavaScript puro — sem frameworks, sem build step e sem
+dependências externas além das fontes do Google Fonts. O catálogo é
+renderizado dinamicamente a partir de uma estrutura de dados em
+JavaScript, e o tema claro/escuro é implementado com CSS custom
+properties.
 
 ## Estrutura do projeto
 
 ```
 catalogo-camisas/
-├── index.html      → estrutura da página
-├── style.css        → visual (cores, layout, tema claro/escuro)
-├── script.js         → dados das camisas + toda a lógica
-├── images/            → fotos reais das camisas (opcional)
+├── index.html    → estrutura da página
+├── style.css     → visual, layout e temas
+├── script.js     → dados do catálogo e toda a lógica da interface
+├── images/       → fotos das camisas
 └── README.md
 ```
 
-## Como adicionar ou remover uma camisa
+## Identidade visual
 
-Todo o catálogo é controlado por um único lugar: o array `camisas`, no
-topo do arquivo `script.js`.
+| Uso                 | Cor       |
+|----------------------|-----------|
+| Vermelho principal    | `#E10600` |
+| Vermelho escuro       | `#A30000` |
+| Fundo (modo claro)    | `#F6F4F1` |
+| Fundo (modo escuro)   | `#101114` |
 
-**Para adicionar uma camisa**, copie um bloco como este e cole dentro do
-array (antes do `];`), ajustando os valores:
+Tipografia: **Bebas Neue** para títulos e destaques, **Inter** para o
+corpo do texto.
 
-```javascript
-{
-  id: 16,
-  nome: "Botafogo 2026 I",
-  time: "Botafogo",
-  categoria: "Brasileiros",
-  preco: 229.9,
-  tamanhos: "P, M, G",
-  imagens: [],
-  disponivel: true,
-},
-```
+## Rodando localmente
 
-- `id`: um número que ainda não foi usado por nenhuma outra camisa
-- `nome`: nome que aparece no card
-- `time`: nome do time (usado na busca)
-- `categoria`: uma destas 4 opções, exatamente como escrito (usada nos
-  filtros do topo): `"Brasileiros"`, `"Europeus"`, `"Resto do Mundo"`,
-  `"Seleções"`
-- `preco`: número, use ponto (não vírgula) para casas decimais
-- `tamanhos`: texto livre, ex: `"P, M, G, GG"`
-- `imagens`: uma **lista** de caminhos de foto (pode ter quantas quiser
-  — frente, costas, detalhe da gola, etc.). Deixe `[]` (lista vazia) se
-  ainda não tiver fotos — nesse caso o site desenha uma camisa ilustrada
-  automaticamente
-- `disponivel`: `true` ou `false` — quando `false`, o card aparece
-  esmaecido com selo "Esgotado" e o botão de pedido fica desativado
-
-Se quiser adicionar um time novo que ainda não existe no site, também
-vale a pena incluir as cores dele no objeto `CORES_TIME` (logo abaixo do
-array `camisas`), pra ilustração automática usar as cores certas.
-
-**Para remover uma camisa**, apague o bloco `{ ... }` correspondente.
-
-**Para usar fotos reais**, coloque os arquivos dentro da pasta `images/`
-e liste os caminhos em `imagens`, por exemplo:
-
-```javascript
-imagens: [
-  "images/flamengo-frente.jpg",
-  "images/flamengo-costas.jpg",
-  "images/flamengo-detalhe.jpg",
-],
-```
-
-Com 2 ou mais fotos, a página de detalhes mostra setas de navegação e
-miniaturas clicáveis automaticamente. Com 1 foto só (ou nenhuma), essa
-navegação fica escondida sozinha — não precisa configurar nada a mais.
-
-> ⚠️ Não use links de sites como Yupoo direto dentro de `imagens` — a
-> maioria bloqueia o uso da imagem fora do próprio site (hotlink
-> protection). Baixe a foto e coloque na pasta `images/`.
-
-## Como colocar seu WhatsApp real
-
-No topo do `script.js`, troque o valor de `NUMERO_WHATSAPP` pelo seu
-número, no formato **código do país + DDD + número**, só números:
-
-```javascript
-const NUMERO_WHATSAPP = "5592900000000";
-```
-
-## Publicando as alterações
-
-Depois de editar o `script.js` (ou qualquer outro arquivo):
+Por não ter build step, basta abrir o `index.html` num navegador, ou
+servir a pasta com qualquer servidor estático, por exemplo:
 
 ```bash
-git add .
-git commit -m "feat: adiciona camisa do Botafogo"
-git push
+python3 -m http.server 8080
 ```
 
-Se o site estiver publicado no Vercel ou Netlify conectado a este
-repositório do GitHub, o site atualiza sozinho a cada `git push` — não
-precisa fazer mais nada.
+---
 
-## Cores do design
-
-| Uso              | Cor       |
-|-------------------|-----------|
-| Vermelho principal | `#E10600` |
-| Vermelho escuro    | `#A30000` |
-| Fundo (claro)      | `#F6F4F1` |
-| Fundo (escuro)     | `#101114` |
-
-## Tecnologias
-
-HTML, CSS e JavaScript puro — sem frameworks, sem build step, sem
-dependências externas (além das fontes do Google Fonts).
+Projeto desenvolvido como estudo prático de front-end (HTML, CSS e
+JavaScript puro), com foco em performance, responsividade e boas
+práticas de organização de código.
