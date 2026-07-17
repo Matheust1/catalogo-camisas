@@ -74,9 +74,9 @@
         <span class="card-team" id="modal-team"></span>
         <h2 class="modal-title" id="modal-title"></h2>
         <span class="card-sizes" id="modal-sizes"></span>
-        <a href="#" class="whatsapp-btn" id="modal-whatsapp" target="_blank" rel="noopener noreferrer">
-          Pedir no WhatsApp
-        </a>
+        <button class="whatsapp-btn" id="modal-whatsapp">
+          Adicionar ao carrinho
+        </button>
       </div>
     </div>
   </div>
@@ -87,11 +87,38 @@
         <span class="brand-number small">XI</span>
         <strong>Eleven Supply</strong>
       </div>
-      <p>Paixão que se veste</p>
-      <a class="footer-whatsapp" id="footer-whatsapp" target="_blank" rel="noopener noreferrer">Pedidos feitos pelo WhatsApp</a>
+      <p>Pedidos combinados diretamente pelo WhatsApp. Pagamento e entrega tratados na conversa.</p>
+      <a class="footer-whatsapp" id="footer-whatsapp" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
       <p class="copyright">&copy; 2026 Eleven Supply. Todos os direitos reservados.</p>
     </div>
   </footer>
+
+  <button class="cart-fab" id="cart-fab" aria-label="Ver carrinho">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+    </svg>
+    <span class="cart-count" id="cart-count" hidden>0</span>
+  </button>
+
+  <div class="cart-overlay" id="cart-overlay" hidden>
+    <div class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+      <div class="cart-header">
+        <h2 id="cart-title">Seu pedido</h2>
+        <button class="modal-close" id="cart-close" aria-label="Fechar">&times;</button>
+      </div>
+
+      <div class="cart-items" id="cart-items"></div>
+      <p class="cart-empty" id="cart-empty" hidden>Seu carrinho está vazio. Adicione camisas pra montar seu pedido.</p>
+
+      <div class="cart-footer">
+        <a href="#" class="whatsapp-btn" id="cart-checkout" target="_blank" rel="noopener noreferrer">
+          Finalizar pedido no WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

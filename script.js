@@ -207,6 +207,14 @@ const modalTitle = document.getElementById("modal-title");
 const modalSizes = document.getElementById("modal-sizes");
 const modalWhatsapp = document.getElementById("modal-whatsapp");
 
+const cartFab = document.getElementById("cart-fab");
+const cartCount = document.getElementById("cart-count");
+const cartOverlay = document.getElementById("cart-overlay");
+const cartClose = document.getElementById("cart-close");
+const cartItemsContainer = document.getElementById("cart-items");
+const cartEmpty = document.getElementById("cart-empty");
+const cartCheckout = document.getElementById("cart-checkout");
+
 /* estado atual dos filtros */
 let filtroCategoria = "Todos";
 let termoBusca = "";
@@ -215,15 +223,14 @@ let termoBusca = "";
 let camisaAberta = null;
 let indiceImagemAtual = 0;
 
+/* itens do carrinho: lista de { id, quantidade } */
+let carrinho = [];
+
 /* =====================================================================
    WHATSAPP
 ===================================================================== */
 function criarLinkWhatsapp(mensagem) {
   return `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
-}
-
-function linkWhatsappCamisa(camisa) {
-  return criarLinkWhatsapp(`Olá! Tenho interesse na camisa: ${camisa.nome}.`);
 }
 
 /* =====================================================================
@@ -269,6 +276,10 @@ function criarCardHTML(camisa) {
   const primeiraImagem = imagensParaExibir(camisa)[0];
   const imagemHTML = htmlDaImagem(camisa, primeiraImagem);
 
+  const botaoAcao = camisa.disponivel
+    ? `<button class="whatsapp-btn" data-add-id="${camisa.id}">Adicionar ao carrinho</button>`
+    : `<button class="whatsapp-btn disabled" disabled>Esgotado</button>`;
+
   return `
     <article class="card ${camisa.disponivel ? "" : "unavailable"}">
       <button class="card-image" data-id="${camisa.id}" aria-label="Ver mais fotos de ${camisa.nome}">
@@ -279,9 +290,7 @@ function criarCardHTML(camisa) {
         <span class="card-team">${camisa.time}</span>
         <h2 class="card-name">${camisa.nome}</h2>
         <span class="card-sizes">Tamanhos: ${camisa.tamanhos}</span>
-        <a href="${linkWhatsappCamisa(camisa)}" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
-          Pedir no WhatsApp
-        </a>
+        ${botaoAcao}
       </div>
     </article>
   `;
@@ -307,6 +316,13 @@ function renderizarCatalogo() {
       const id = Number(botao.dataset.id);
       const camisa = camisas.find((c) => c.id === id);
       abrirModal(camisa);
+    });
+  });
+
+  catalogContainer.querySelectorAll("[data-add-id]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      const id = Number(botao.dataset.addId);
+      adicionarAoCarrinho(id);
     });
   });
 }
@@ -356,15 +372,15 @@ function abrirModal(camisa) {
   modalSizes.textContent = `Tamanhos: ${camisa.tamanhos}`;
 
   if (camisa.disponivel) {
-    modalWhatsapp.href = linkWhatsappCamisa(camisa);
-    modalWhatsapp.textContent = "Pedir no WhatsApp";
+    modalWhatsapp.textContent = "Adicionar ao carrinho";
     modalWhatsapp.classList.remove("disabled");
-    modalWhatsapp.removeAttribute("aria-disabled");
+    modalWhatsapp.disabled = false;
+    modalWhatsapp.onclick = () => adicionarAoCarrinho(camisa.id);
   } else {
-    modalWhatsapp.href = "#";
     modalWhatsapp.textContent = "Esgotado";
     modalWhatsapp.classList.add("disabled");
-    modalWhatsapp.setAttribute("aria-disabled", "true");
+    modalWhatsapp.disabled = true;
+    modalWhatsapp.onclick = null;
   }
 
   renderizarThumbs();
@@ -428,11 +444,186 @@ modalPrev.addEventListener("click", () => mostrarImagem(indiceImagemAtual - 1));
 modalNext.addEventListener("click", () => mostrarImagem(indiceImagemAtual + 1));
 
 document.addEventListener("keydown", (evento) => {
-  if (modalOverlay.hidden) return;
+  if (!modalOverlay.hidden) {
+    if (evento.key === "Escape") fecharModal();
+    if (evento.key === "ArrowLeft") mostrarImagem(indiceImagemAtual - 1);
+    if (evento.key === "ArrowRight") mostrarImagem(indiceImagemAtual + 1);
+  }
 
-  if (evento.key === "Escape") fecharModal();
-  if (evento.key === "ArrowLeft") mostrarImagem(indiceImagemAtual - 1);
-  if (evento.key === "ArrowRight") mostrarImagem(indiceImagemAtual + 1);
+  if (!cartOverlay.hidden && evento.key === "Escape") {
+    fecharCarrinho();
+  }
+});
+
+/* =====================================================================
+   CARRINHO — vários itens, quantidades e mensagem consolidada
+===================================================================== */
+function carregarCarrinho() {
+  try {
+    const salvo = localStorage.getItem("carrinho");
+    carrinho = salvo ? JSON.parse(salvo) : [];
+  } catch (erro) {
+    carrinho = [];
+  }
+}
+
+function salvarCarrinho() {
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+}
+
+function adicionarAoCarrinho(id, quantidade = 1) {
+  const item = carrinho.find((i) => i.id === id);
+
+  if (item) {
+    item.quantidade += quantidade;
+  } else {
+    carrinho.push({ id, quantidade });
+  }
+
+  salvarCarrinho();
+  atualizarContadorCarrinho();
+
+  if (!cartOverlay.hidden) {
+    renderizarCarrinho();
+  }
+}
+
+function removerDoCarrinho(id) {
+  carrinho = carrinho.filter((i) => i.id !== id);
+  salvarCarrinho();
+  atualizarContadorCarrinho();
+  renderizarCarrinho();
+}
+
+function alterarQuantidade(id, delta) {
+  const item = carrinho.find((i) => i.id === id);
+  if (!item) return;
+
+  item.quantidade += delta;
+
+  if (item.quantidade <= 0) {
+    removerDoCarrinho(id);
+    return;
+  }
+
+  salvarCarrinho();
+  atualizarContadorCarrinho();
+  renderizarCarrinho();
+}
+
+function quantidadeTotalCarrinho() {
+  return carrinho.reduce((total, item) => total + item.quantidade, 0);
+}
+
+function atualizarContadorCarrinho() {
+  const total = quantidadeTotalCarrinho();
+  cartCount.textContent = total;
+  cartCount.hidden = total === 0;
+
+  cartCount.classList.remove("bump");
+  // força o navegador a "esquecer" a animação anterior antes de reaplicar
+  void cartCount.offsetWidth;
+  cartCount.classList.add("bump");
+}
+
+function itemDeCarrinhoHTML(item) {
+  const camisa = camisas.find((c) => c.id === item.id);
+  if (!camisa) return "";
+
+  const imagem = htmlDaImagem(camisa, imagensParaExibir(camisa)[0]);
+
+  return `
+    <div class="cart-item">
+      <div class="cart-item-image">${imagem}</div>
+      <div class="cart-item-info">
+        <span class="card-team">${camisa.time}</span>
+        <span class="cart-item-name">${camisa.nome}</span>
+      </div>
+      <div class="cart-item-qty">
+        <button class="qty-btn" data-qty-id="${camisa.id}" data-delta="-1" aria-label="Diminuir quantidade">−</button>
+        <span class="qty-value">${item.quantidade}</span>
+        <button class="qty-btn" data-qty-id="${camisa.id}" data-delta="1" aria-label="Aumentar quantidade">+</button>
+      </div>
+      <button class="cart-item-remove" data-remove-id="${camisa.id}" aria-label="Remover ${camisa.nome}">&times;</button>
+    </div>
+  `;
+}
+
+function renderizarCarrinho() {
+  cartEmpty.hidden = carrinho.length > 0;
+  cartItemsContainer.innerHTML = carrinho.map(itemDeCarrinhoHTML).join("");
+
+  cartItemsContainer.querySelectorAll("[data-qty-id]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      alterarQuantidade(Number(botao.dataset.qtyId), Number(botao.dataset.delta));
+    });
+  });
+
+  cartItemsContainer.querySelectorAll("[data-remove-id]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      removerDoCarrinho(Number(botao.dataset.removeId));
+    });
+  });
+
+  const temItens = carrinho.length > 0;
+  cartCheckout.classList.toggle("disabled", !temItens);
+  cartCheckout.href = temItens ? mensagemPedidoCarrinho() : "#";
+}
+
+function mensagemPedidoCarrinho() {
+  const linhas = carrinho.map((item, indice) => {
+    const camisa = camisas.find((c) => c.id === item.id);
+    return `${indice + 1}) ${item.quantidade}x ${camisa.nome}`;
+  });
+
+  const texto = [
+    "Olá! Gostaria de fazer o seguinte pedido:",
+    "",
+    "*Pedido — Eleven Supply*",
+    ...linhas,
+    "",
+    `Total de itens: ${quantidadeTotalCarrinho()}`,
+    "",
+    "Aguardo confirmação de valores e forma de pagamento. Obrigado!",
+  ].join("\n");
+
+  return criarLinkWhatsapp(texto);
+}
+
+function abrirCarrinho() {
+  renderizarCarrinho();
+  cartOverlay.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function fecharCarrinho() {
+  cartOverlay.hidden = true;
+  document.body.style.overflow = "";
+}
+
+cartFab.addEventListener("click", abrirCarrinho);
+cartClose.addEventListener("click", fecharCarrinho);
+
+cartOverlay.addEventListener("click", (evento) => {
+  if (evento.target === cartOverlay) {
+    fecharCarrinho();
+  }
+});
+
+cartCheckout.addEventListener("click", (evento) => {
+  if (carrinho.length === 0) {
+    evento.preventDefault();
+    return;
+  }
+
+  // dá um instante pro navegador abrir o link do WhatsApp antes de esvaziar
+  setTimeout(() => {
+    carrinho = [];
+    salvarCarrinho();
+    atualizarContadorCarrinho();
+    renderizarCarrinho();
+    fecharCarrinho();
+  }, 300);
 });
 
 /* =====================================================================
@@ -456,5 +647,7 @@ themeToggle.addEventListener("click", () => {
    INICIALIZAÇÃO
 ===================================================================== */
 footerWhatsapp.href = criarLinkWhatsapp("Olá! Vim pelo catálogo e gostaria de mais informações.");
+carregarCarrinho();
+atualizarContadorCarrinho();
 renderizarChips();
 renderizarCatalogo();
