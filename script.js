@@ -465,13 +465,45 @@ function carregarCarrinho() {
   } catch (erro) {
     carrinho = [];
   }
+
+  sanitizarCarrinho();
+}
+
+/* Remove do carrinho qualquer item inválido: id que não existe mais no
+   catálogo, quantidade que não é um número inteiro positivo, ou
+   entradas duplicadas (soma as quantidades nesse caso). Protege contra
+   dados corrompidos ou editados manualmente no localStorage. */
+function sanitizarCarrinho() {
+  if (!Array.isArray(carrinho)) {
+    carrinho = [];
+    return;
+  }
+
+  const somasPorId = new Map();
+
+  carrinho.forEach((item) => {
+    const id = Number(item && item.id);
+    const quantidade = Number(item && item.quantidade);
+    const camisaExiste = camisas.some((c) => c.id === id);
+    const quantidadeValida = Number.isInteger(quantidade) && quantidade > 0;
+
+    if (!camisaExiste || !quantidadeValida) return;
+
+    somasPorId.set(id, (somasPorId.get(id) || 0) + quantidade);
+  });
+
+  carrinho = Array.from(somasPorId, ([id, quantidade]) => ({ id, quantidade }));
 }
 
 function salvarCarrinho() {
+  sanitizarCarrinho();
   localStorage.setItem("carrinho", JSON.stringify(carrinho));
 }
 
 function adicionarAoCarrinho(id, quantidade = 1) {
+  const camisaExiste = camisas.some((c) => c.id === id);
+  if (!camisaExiste || !Number.isInteger(quantidade) || quantidade <= 0) return;
+
   const item = carrinho.find((i) => i.id === id);
 
   if (item) {
